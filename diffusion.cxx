@@ -76,6 +76,19 @@ void step(double* const f1, double* const f0,
   for(int i=0;i<N;i++) d[i] = 1.0 + 2.0*D*dt/(dx*dx);
   for(int i=0;i<N;i++) u[i] = - D*dt/(dx*dx);
   for(int i=0;i<N;i++) l[i] = - D*dt/(dx*dx);
+  
+  for(int i=1;i<N;i++){
+  
+    d[i]  -= u[i-1]*l[i]/d[i-1];
+    f0[i] -= f0[i-1]*l[i]/d[i-1];
+  }
+  
+  f1[N-1] = f0[N-1]/d[N-1];  //f0 und d sind schon die geschlaengelten
+  
+  for(int i=N-2;i>=0;i--){
+  
+    f1[i] = (f0[i] - u[i]*f1[i+1]) / d[i];    
+  }
 
 
   delete[] d;
@@ -93,7 +106,7 @@ void initialize(double* const u0, const double dx,
      u0[i] = 1.0/sqrt(4*M_PI)*exp(-x*x/4.0);
 
    }
-}
+} //Gaussian distribution
 //-----------------------------------------------
 void writeToFile(const double* const u, const string s, const double dx,
                  const double xmin, const int N, const double t)
